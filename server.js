@@ -1,0 +1,33 @@
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3333;
+var cors = require("cors");
+app.use(cors());
+
+const { rootRouter } = require("./routers");
+
+app.use(express.json());
+
+app.use("/api", rootRouter);
+
+app.use((err, req, res, next) => {
+  const error =
+    app.get("env") === "development"
+      ? { err: "Development err" }
+      : { err: "Client" };
+  const status = err.status || 500;
+  return res.status(status).json({
+    error: {
+      message: error.message,
+    },
+  });
+});
+
+app.listen(PORT, async () => {
+  console.log(`Server Port : ${PORT}`);
+  try {
+    console.log(`Susscess Port ${PORT}`);
+  } catch {
+    console.log(`Error Port ${PORT}`);
+  }
+});
