@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, sequelize } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -71,9 +71,43 @@ const getOneUsers = async (req, res) => {
   });
   res.status(200).send(oneUsers);
 };
+const getUserActions = async (req, res) => {
+  const { id } = req.params;
+  const [resuilt] = await sequelize.query(
+    `
+    SELECT Stories_Users.userID,Stories_Users.storyID,Stories_Users.actionsID, Users.fullName, Users.userName FROM Stories_Users
+    inner join Users on Stories_Users.userID = ${id} = Users.id
+    `
+  );
+  res.status(200).send(resuilt);
+};
+const upadtePassword = async (req, res) => {
+  const { id } = req.params
+  const { passwordOLD, password } = req.body
+  const PasswordUpdate = await User.findOne({
+      where: {
+          id,
+      }
+  })
+  const isAuth = bcrypt.compareSync(passwordOLD, PasswordUpdate.password);
+  if (isAuth) {
+      const saltUpdate = bcrypt.genSaltSync(11);
+      const hashPasswordUpdate = bcrypt.hashSync(password, saltUpdate)
+      PasswordUpdate.password = hashPasswordUpdate;
+      await PasswordUpdate.save()
+      res.status(200).send(PasswordUpdate)
+  } else {
+      res.status(400).send({ flag: false })
+  }
+
+}
+
+
 module.exports = {
   login,
   register,
   getAllUsers,
   getOneUsers,
+  getUserActions,
+  upadtePassword
 };

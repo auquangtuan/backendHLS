@@ -9,7 +9,10 @@ const {
 const storiesRouter = require("express-promise-router")();
 
 storiesRouter.route("/").get(getAllStory).post(addStory);
-storiesRouter.route("/:id").get(getOneStory).put(editStory).delete(deleteStory);
+storiesRouter.route("/:id")
+        .get(getOneStory)
+        .put(editStory)
+        .delete(deleteStory);
 module.exports = {
   storiesRouter,
 };

@@ -32,12 +32,17 @@ const editStory = async (req, res) => {
 };
 const deleteStory = async (req, res) => {
   const { id } = req.params;
-  await Stories.destroy({
-    where: {
-      id,
-    },
-  });
-  res.status(200).send("Đã Xóa");
+  try {
+    await Stories.destroy({
+      where: {
+        id,
+      },
+    });
+    res.status(200).send("Đã Xóa");
+    
+  } catch (error) {
+    console.log(error)
+  }
 };
 
 module.exports = {
